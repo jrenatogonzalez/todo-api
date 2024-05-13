@@ -1,0 +1,103 @@
+plugins {
+	id 'java'
+	id 'idea'
+	id 'org.springframework.boot' version '3.2.5'
+	id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'dev.rgonzalez.demo'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '21'
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'io.github.wimdeblauwe:error-handling-spring-boot-starter:4.3.0'
+	implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
+	implementation 'org.flywaydb:flyway-core:10.12.0'
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+// Integration Tests configuration.
+sourceSets {
+	// Define the name of the new source set as 'integrationTest'.
+	integrationTest {
+		// Includes the compiled main code when compiling integration tests.
+		compileClasspath += sourceSets.main.output + test.output
+		// Includes the compiled main code when running integration tests.
+		runtimeClasspath += sourceSets.main.output + test.output
+	}
+}
+
+// If the 'idea' plugin is enabled then configure it further.
+if (project.plugins.findPlugin('idea')) {
+	idea {
+		module {
+			// Marks the integration test’s Java source directories for Intellij IDEA’s configuration.
+			testSourceDirs += sourceSets.integrationTest.java.srcDirs
+			// Marks the integration test’s resource directories for Intellij IDEA’s configuration.
+			testResourceDirs += sourceSets.integrationTest.resources.srcDirs
+			// Configures Intellij IDEA to scope the integration tests as TEST.
+			scopes.TEST.plus += [ configurations.compileClasspath ]
+		}
+	}
+}
+
+configurations {
+	// `integrationTestImplementation` extending from `implementation` means that all the declared dependencies of
+	// the production code also become dependencies of the integration tests.
+	integrationTestImplementation.extendsFrom testImplementation
+
+	// Same for the `integrationTestRuntimeOnly` configuration
+	integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+/*
+ * Create a new Gradle task called `integrationTest` which runs our integration tests.
+ */
+task integrationTest(type: Test) {
+	// We want to use the JUnit 5 platform to execute our integration test.
+	useJUnitPlatform()
+	// Describes this task for reports and user interfaces such as when running ./gradlew tasks.
+	description = 'Runs the integration tests.'
+	// Groups this task under Verification for reports and user interfaces such as when running ./gradlew tasks.
+	group = 'verification'
+	// Sets the code to test as the compiled code from the integrationTest source set.
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
+	// Sets the runtime classpath to be as defined in the integrationTest source set.
+	classpath = sourceSets.integrationTest.runtimeClasspath
+	// Forces Gradle to always run the integration tests when asked to. By default, Gradle attempts to optimize
+	// task execution by not re-running tasks whose inputs have not changed. Since integration tests may fail due
+	// to external systems, we want to run them even if no code has changed.
+	outputs.upToDateWhen { false }
+	// Enforces task ordering (not task dependency). We use `mustRunAfter test` rather than `dependsOn test` because we
+	// do not always want to run unit tests when we run integration tests. So:
+	// `./gradlew integrationTest test` - will run `test` then `integrationTest`.
+	// `./gradlew integrationTest`      - will only run `integrationTest` (since it does not depend on `test`).
+	mustRunAfter test
+}
+
+// Enforces that integration tests will be run when `./gradlew check` is run. This is because semantically we would
+// expect the `check` task to verify that all systems (including integrations) are working.
+check.dependsOn integrationTest
