@@ -1,6 +1,5 @@
 package dev.rgonzalez.demo.todo.grpc.service.observer;
 
-import dev.rgonzalez.proto.todo.client.todo.ListTodoRequest;
 import dev.rgonzalez.proto.todo.client.todo.ListTodoResponse;
 import io.grpc.stub.StreamObserver;
 
