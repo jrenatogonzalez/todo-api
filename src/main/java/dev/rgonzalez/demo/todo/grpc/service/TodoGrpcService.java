@@ -1,11 +1,14 @@
 package dev.rgonzalez.demo.todo.grpc.service;
 
+import dev.rgonzalez.demo.todo.exceptions.NotFoundException;
 import dev.rgonzalez.demo.todo.grpc.converter.PageRequestProtoConverter;
 import dev.rgonzalez.demo.todo.grpc.converter.PagedResultProtoConverter;
 import dev.rgonzalez.demo.todo.grpc.converter.TodoProtoConverter;
 import dev.rgonzalez.demo.todo.model.PagedResult;
 import dev.rgonzalez.demo.todo.model.Todo;
 import dev.rgonzalez.demo.todo.service.TodoService;
+import dev.rgonzalez.proto.todo.client.todo.DeleteTodoRequest;
+import dev.rgonzalez.proto.todo.client.todo.DeleteTodoResponse;
 import dev.rgonzalez.proto.todo.client.todo.GetTodoRequest;
 import dev.rgonzalez.proto.todo.client.todo.GetTodoResponse;
 import dev.rgonzalez.proto.todo.client.todo.ListTodoRequest;
@@ -78,4 +81,18 @@ public class TodoGrpcService extends TodoServiceGrpc.TodoServiceImplBase {
         }
     }
 
+    @Override
+    public void delete(DeleteTodoRequest request, StreamObserver<DeleteTodoResponse> responseObserver) {
+        try {
+            todoService.deleteById(request.getId());
+            var response = DeleteTodoResponse.newBuilder().build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        } catch (NotFoundException e) {
+            responseObserver.onError(Status.NOT_FOUND
+                    .withDescription(e.getMessage())
+                    .asException());
+        }
+    }
 }

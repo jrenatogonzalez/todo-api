@@ -2,6 +2,7 @@ package dev.rgonzalez.demo.todo.grpc.service;
 
 import dev.rgonzalez.demo.todo.AppProperties;
 import dev.rgonzalez.demo.todo.grpc.service.observer.ListTodoResponseObserver;
+import dev.rgonzalez.proto.todo.client.todo.DeleteTodoRequest;
 import dev.rgonzalez.proto.todo.client.todo.GetTodoRequest;
 import dev.rgonzalez.proto.todo.client.todo.ListTodoRequest;
 import dev.rgonzalez.proto.todo.client.todo.ListTodoResponse;
@@ -136,6 +137,33 @@ class TodoGrpcServiceIntegrationTest {
 
         // When & Then
         assertThatThrownBy(() -> blockingStub.get(request), "Todo not found")
+                .isInstanceOf(StatusRuntimeException.class)
+                .extracting(e -> (StatusRuntimeException) e)
+                .extracting(sre -> sre.getStatus().getCode()).isEqualTo(Status.NOT_FOUND.getCode());
+    }
+
+    @Test
+    void shouldDeleteTodo() {
+        // Given
+        int id = 7;
+        var request = DeleteTodoRequest.newBuilder().setId(id).build();
+
+        // When
+        var response = blockingStub.delete(request);
+
+        // Then
+        assertThat(response).isNotNull();
+        assertThat(response.isInitialized()).isTrue();
+    }
+
+    @Test
+    void shouldThrowNotFoundExceptionWhenDeletingNonExistentTodo() {
+        // Given
+        int id = 4;
+        var request = DeleteTodoRequest.newBuilder().setId(id).build();
+
+        // When & then
+        assertThatThrownBy(() -> blockingStub.delete(request), "Todo not found")
                 .isInstanceOf(StatusRuntimeException.class)
                 .extracting(e -> (StatusRuntimeException) e)
                 .extracting(sre -> sre.getStatus().getCode()).isEqualTo(Status.NOT_FOUND.getCode());

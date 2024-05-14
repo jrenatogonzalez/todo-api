@@ -18,6 +18,7 @@ service TodoService {
 
   rpc Get(GetTodoRequest) returns (GetTodoResponse) {}
 
+  rpc Delete(DeleteTodoRequest) returns (DeleteTodoResponse) {}
 }
 
 message ListTodoRequest {
@@ -35,4 +36,11 @@ message GetTodoRequest {
 
 message GetTodoResponse {
   common.Todo todo = 1;
+}
+
+message DeleteTodoRequest {
+  uint32 id = 1;
+}
+
+message DeleteTodoResponse {
 }
