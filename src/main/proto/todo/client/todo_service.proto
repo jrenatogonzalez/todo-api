@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package todo.v1.client;
+
+import "todo/common/messages.proto";
+import "google/protobuf/timestamp.proto";
+
+option java_multiple_files = true;
+option java_package = "dev.rgonzalez.proto.todo.client.todo";
+option objc_class_prefix = "TODO";
+
+/**
+ * Service used to handle Todos.
+ */
+service TodoService {
+
+  rpc List(ListTodoRequest) returns (ListTodoResponse) {}
+
+  rpc Get(GetTodoRequest) returns (GetTodoResponse) {}
+
+}
+
+message ListTodoRequest {
+  common.PageRequest page_request = 1;
+}
+
+message ListTodoResponse {
+  repeated common.Todo todos = 1;
+  common.PageResponse page_response = 2;
+}
+
+message GetTodoRequest {
+  uint32 id = 1;
+}
+
+message GetTodoResponse {
+  common.Todo todo = 1;
+}
