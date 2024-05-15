@@ -208,8 +208,9 @@ class TodoControllerTest {
         doThrow(new NotFoundException("Todo not found")).when(todoService).update(todoToBeUpdated);
 
         // When
-        assertThatThrownBy(() -> todoController.update(id, request), "Todo not found")
-                .isInstanceOf(NotFoundException.class);
+        assertThatThrownBy(() -> todoController.update(id, request))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("Todo not found");
 
         // Then
         verify(todoService).update(todoToBeUpdated);
@@ -239,8 +240,9 @@ class TodoControllerTest {
         doThrow(new NotFoundException("Todo not found")).when(todoService).deleteById(id);
 
         // When
-        assertThatThrownBy(() -> todoController.delete(id), "Todo not found")
-                .isInstanceOf(NotFoundException.class);
+        assertThatThrownBy(() -> todoController.delete(id))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("Todo not found");
 
         // Then
         verify(todoService).deleteById(id);

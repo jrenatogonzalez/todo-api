@@ -227,8 +227,9 @@ class TodoRepositoryTest {
         when(mappedQuerySpec.optional()).thenReturn(Optional.empty());
 
         // When & Then
-        assertThatThrownBy(() -> todoRepository.update(todo), "Todo not found")
-                .isInstanceOf(NotFoundException.class);
+        assertThatThrownBy(() -> todoRepository.update(todo))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("Todo not found");
 
         // Then
         verify(jdbcClient).sql(contains(sqlFindById));
@@ -260,8 +261,9 @@ class TodoRepositoryTest {
         when(statementSpec.update()).thenReturn(0);
 
         // When
-        assertThatThrownBy(() -> todoRepository.deleteById(id), "Todo not found")
-                .isInstanceOf(NotFoundException.class);
+        assertThatThrownBy(() -> todoRepository.deleteById(id))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("Todo not found");
 
         // Then
         verify(jdbcClient).sql(any(String.class));

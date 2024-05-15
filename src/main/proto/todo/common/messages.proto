@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package todo.v1.common;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+option java_multiple_files = true;
+option java_package = "dev.rgonzalez.proto.todo.common.messages";
+option objc_class_prefix = "CMTODO";
+
+/***
+ * Object containing information about a page. Usually used in list rpc requests for
+ * pagination logic.
+ */
+message PageRequest {
+  /* Page Number */
+  uint32 page = 1;
+  /* Number of elements per page */
+  uint32 size = 2;
+}
+
+message PageResponse {
+  uint32 total_elements = 1;
+  uint32 total_pages = 2;
+  uint32 size = 3;
+  uint32 page = 4;
+}
+
+message Date {
+  // Year of the date. Must be from 1 to 9999, or 0 to specify a date without
+  // a year.
+  int32 year = 1;
+
+  // Month of a year. Must be from 1 to 12, or 0 to specify a year without a
+  // month and day.
+  int32 month = 2;
+
+  // Day of a month. Must be from 1 to 31 and valid for the year and month, or 0
+  // to specify a year by itself or a year and month where the day isn't
+  // significant.
+  int32 day = 3;
+}
+
+message Todo {
+  uint32 id = 1;
+  string description = 2;
+  Priority priority = 3;
+  optional Date due_date = 4;
+  bool completed = 5;
+  google.protobuf.Timestamp created_at = 6;
+  optional google.protobuf.Timestamp completed_at = 7;
+}
+
+enum Priority {
+  PRIORITY_UNSPECIFIED = 0;
+  PRIORITY_LOW = 1;
+  PRIORITY_MEDIUM = 2;
+  PRIORITY_HIGH = 3;
+}

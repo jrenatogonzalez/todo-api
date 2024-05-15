@@ -34,16 +34,16 @@ class PageRequestTest {
     @Test
     void shouldThrowIllegalArgumentExceptionWhenPageIsNegative() {
         // When & Then
-        assertThatThrownBy(() -> PageRequest.of(-1, 10),
-                "Page cannot be negative and size cannot be less than one")
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> PageRequest.of(-1, 10))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Page cannot be negative and size cannot be less than one");
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenPageSizeIsLessThanOne() {
         // When & Then
-        assertThatThrownBy(() -> PageRequest.of(3, 0),
-                "Page cannot be negative and size cannot be less than one")
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> PageRequest.of(3, 0))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Page cannot be negative and size cannot be less than one");
     }
 }
