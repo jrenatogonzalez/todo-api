@@ -22,6 +22,7 @@ public class GrpcServer {
     private final TodoGrpcService todoGrpcService;
     private final AppProperties appProperties;
     private final ExecutorService grpcExecutor;
+    private final ErrorHandlingInterceptor errorHandlingInterceptor;
     public static final int MAX_INBOUND_MESSAGE_SIZE = (100 * 1024 * 1024);
     private Server server;
 
@@ -56,6 +57,7 @@ public class GrpcServer {
         return ServerBuilder.forPort(appProperties.getGrpcPort())
                 .executor(grpcExecutor)
                 .addService(todoGrpcService)
+                .intercept(errorHandlingInterceptor)
                 .maxInboundMessageSize(MAX_INBOUND_MESSAGE_SIZE)
                 .maxInboundMetadataSize(MAX_INBOUND_MESSAGE_SIZE)
                 .build();

@@ -1,6 +1,5 @@
 package dev.rgonzalez.demo.todo.grpc.service;
 
-import dev.rgonzalez.demo.todo.exceptions.NotFoundException;
 import dev.rgonzalez.demo.todo.grpc.converter.CreateTodoRequestProtoConverter;
 import dev.rgonzalez.demo.todo.grpc.converter.PageRequestProtoConverter;
 import dev.rgonzalez.demo.todo.grpc.converter.PagedResultProtoConverter;
@@ -138,14 +137,10 @@ public class TodoGrpcService extends TodoServiceGrpc.TodoServiceImplBase {
 
     @Override
     public void delete(DeleteTodoRequest request, StreamObserver<DeleteTodoResponse> responseObserver) {
-        try {
-            todoService.deleteById(request.getId());
-            var response = DeleteTodoResponse.newBuilder().build();
+        todoService.deleteById(request.getId());
+        var response = DeleteTodoResponse.newBuilder().build();
 
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
-        } catch (NotFoundException e) {
-            responseObserver.onError(Status.NOT_FOUND.withDescription(e.getMessage()).asException());
-        }
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 }

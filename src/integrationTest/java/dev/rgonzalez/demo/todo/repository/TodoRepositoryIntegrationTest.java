@@ -188,9 +188,9 @@ class TodoRepositoryIntegrationTest {
                 .build();
 
         // When & Then
-        assertThatThrownBy(() -> todoRepository.update(todoToBeUpdated),
-                "Todo not found")
-                .isInstanceOf(NotFoundException.class);
+        assertThatThrownBy(() -> todoRepository.update(todoToBeUpdated))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("Todo not found");
     }
 
     @Test
@@ -214,9 +214,9 @@ class TodoRepositoryIntegrationTest {
         Integer id = 4;
 
         // When & Then
-        assertThatThrownBy(() -> todoRepository.deleteById(id),
-                "Todo not found")
-                .isInstanceOf(NotFoundException.class);
+        assertThatThrownBy(() -> todoRepository.deleteById(id))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("Todo not found");
     }
 
     @Test

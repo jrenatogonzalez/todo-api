@@ -56,6 +56,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'io.github.wimdeblauwe:error-handling-spring-boot-starter:4.3.0'
     implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
     implementation 'org.flywaydb:flyway-core:10.12.0'

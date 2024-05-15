@@ -144,8 +144,9 @@ class TodoGrpcServiceIntegrationTest {
                 .build();
 
         // When & Then
-        assertThatThrownBy(() -> blockingStub.get(request), "Todo not found")
+        assertThatThrownBy(() -> blockingStub.get(request))
                 .isInstanceOf(StatusRuntimeException.class)
+                .hasMessage("NOT_FOUND: Todo not found")
                 .extracting(e -> (StatusRuntimeException) e)
                 .extracting(sre -> sre.getStatus().getCode()).isEqualTo(Status.NOT_FOUND.getCode());
     }
@@ -185,6 +186,29 @@ class TodoGrpcServiceIntegrationTest {
     }
 
     @Test
+    void shouldThrowInvalidArgumentExceptionWhenCreatingTodoWithoutDescription() {
+        // Given
+        String description = "";
+        Date dueDate = Date.newBuilder()
+                .setYear(2024)
+                .setMonth(5)
+                .setDay(18)
+                .build();
+        CreateTodoRequest request = CreateTodoRequest.newBuilder()
+                .setDescription(description)
+                .setPriority(PRIORITY_LOW)
+                .setDueDate(dueDate)
+                .build();
+
+        // When
+        assertThatThrownBy(() -> blockingStub.create(request))
+                .hasMessage("INVALID_ARGUMENT: Description is required.")
+                .isInstanceOf(StatusRuntimeException.class)
+                .extracting(e -> (StatusRuntimeException) e)
+                .extracting(sre -> sre.getStatus().getCode()).isEqualTo(Status.INVALID_ARGUMENT.getCode());;
+    }
+
+    @Test
     void shouldUpdateTodo() {
         // Given
         int id = 3;
@@ -211,6 +235,25 @@ class TodoGrpcServiceIntegrationTest {
     }
 
     @Test
+    void shouldThrowNotFoundExceptionWhenUpdatingNonExistentTodo() {
+        // Given
+        int id = 4;
+        String description = "Todo to be updated";
+        UpdateTodoRequest request = UpdateTodoRequest.newBuilder()
+                .setId(id)
+                .setDescription(description)
+                .setCompleted(true)
+                .build();
+
+        // When & Then
+        assertThatThrownBy(() -> blockingStub.update(request))
+                .isInstanceOf(StatusRuntimeException.class)
+                .hasMessage("NOT_FOUND: Todo not found")
+                .extracting(e -> (StatusRuntimeException) e)
+                .extracting(sre -> sre.getStatus().getCode()).isEqualTo(Status.NOT_FOUND.getCode());
+    }
+
+    @Test
     void shouldDeleteTodo() {
         // Given
         int id = 7;
@@ -231,8 +274,9 @@ class TodoGrpcServiceIntegrationTest {
         var request = DeleteTodoRequest.newBuilder().setId(id).build();
 
         // When & then
-        assertThatThrownBy(() -> blockingStub.delete(request), "Todo not found")
+        assertThatThrownBy(() -> blockingStub.delete(request))
                 .isInstanceOf(StatusRuntimeException.class)
+                .hasMessage("NOT_FOUND: Todo not found")
                 .extracting(e -> (StatusRuntimeException) e)
                 .extracting(sre -> sre.getStatus().getCode()).isEqualTo(Status.NOT_FOUND.getCode());
     }
