@@ -18,6 +18,10 @@ service TodoService {
 
   rpc Get(GetTodoRequest) returns (GetTodoResponse) {}
 
+  rpc Create(CreateTodoRequest) returns (CreateTodoResponse) {}
+
+  rpc Update(UpdateTodoRequest) returns (UpdateTodoResponse) {}
+
   rpc Delete(DeleteTodoRequest) returns (DeleteTodoResponse) {}
 }
 
@@ -35,6 +39,28 @@ message GetTodoRequest {
 }
 
 message GetTodoResponse {
+  common.Todo todo = 1;
+}
+
+message CreateTodoRequest {
+  string description = 1;
+  optional common.Priority priority = 2;
+  optional common.Date due_date = 3;
+}
+
+message CreateTodoResponse {
+  common.Todo todo = 1;
+}
+
+message UpdateTodoRequest {
+  uint32 id = 1;
+  optional string description = 2;
+  optional common.Priority priority = 3;
+  optional common.Date dueDate = 4;
+  optional bool completed = 5;
+}
+
+message UpdateTodoResponse {
   common.Todo todo = 1;
 }
 
